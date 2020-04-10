@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>問題登録</title>
+  <script src="http://unpkg.com/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <input v-mode="questionID">
+    <textarea v-model="question" placeholder="質問"></textarea>
+    <select v-model="answerType">
+      <option disabled value="">Please select one</option>
+      <option value="00">text</option>
+      <option value="01">radio</option>
+      <option value="02">checkbox</option>
+    </select><br/>
+    選択肢1:<input v-mode="choices" placeholder="選択肢1"><br/>
+    選択肢2:<input v-mode="choices" placeholder="選択肢2"><br/>
+    選択肢3:<input v-mode="choices" placeholder="選択肢3"><br/>
+    選択肢4:<input v-mode="choices" placeholder="選択肢4"><br/>
+
+    <button v-on:click="regist">登録</button>
+    <button v-on:click="update">更新</button>
+    <button v-on:click="select">検索</button>
+    <button v-on:click="quiz">出題</button>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
