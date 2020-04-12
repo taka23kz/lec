@@ -8,6 +8,18 @@
 </head>
 <body>
     <div id="quiz">
+      {{question.question}}
+      <div v-if="question.answerType === '01'">
+        <label v-for="choice in choices">
+          <input type="radio" name="choiceId" v-model="choiceId" :value="choice.choiceId">{{ choice.choiceLabel }}
+        </label>
+      </div>
+      <div v-if="question.answerType === '02'">
+        <label v-for="choice in choices">
+          <input type="checkbox" name="choiceId" v-model="choiceId" :value="choice.choiceId">{{ choice.choiceLabel }}
+        </label>
+      </div>
+      <button v-on:click="answer">回答</button>
     </div>
     <script src="/quiz.js"></script>
 </body>

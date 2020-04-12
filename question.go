@@ -138,7 +138,8 @@ func (controller *Controller) SelectQuestion(c echo.Context) error {
 	return c.JSON(http.StatusOK, questions)
 }
 
-func (controller *Controller) getQuestion(c echo.Context) error {
+// GetQuestion is GET question to return question
+func (controller *Controller) GetQuestion(c echo.Context) error {
 	var questions []Question
 	var choices []Choice
 	var quiz Quiz
@@ -155,9 +156,7 @@ func (controller *Controller) getQuestion(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "getQuestion(select t_question): "+err.Error())
 	}
 	rand.Seed(time.Now().UnixNano())
-	i := rand.Intn(len(questions))
-	fmt.Println(i)
-	quiz.Question = questions[i]
+	quiz.Question = questions[rand.Intn(len(questions))]
 
 	_, err = controller.dbmap.Select(&choices, "SELECT * FROM t_choice where question_id = $1", quiz.Question.QuestionID)
 	if err != nil {
@@ -170,6 +169,11 @@ func (controller *Controller) getQuestion(c echo.Context) error {
 	return c.JSON(http.StatusOK, quiz)
 }
 
+/*
+func (controller *Controller) JudgeAnswer(c echo.Context) error {
+	return nil
+}
+*/
 func attachTable(controller *Controller) {
 	question := controller.dbmap.AddTableWithName(Question{}, "t_question")
 	question.ColMap("AnswerType").Rename("answer_type")
