@@ -11,6 +11,7 @@ const quiz = new Vue({
         lessonId : '',
       },
       choiceId : '',
+      choiceIds : [],
       choices : []
     },
     methods: {
@@ -44,8 +45,17 @@ const quiz = new Vue({
           'questionID' : quiz.question.questionId,
           'choice' : quiz.choiceId
         }
-        alert(quiz.choiceId);
-        
+        axios.post('api/question/answer', payload)
+        .then((response) => {
+          if ( response.data.correct ) {
+            alert('正解！');
+          } else {
+            alert('不正解!');
+          }
+          //alert(response.data.answer);
+        }).catch((err) => {
+          alert(err.response.data.error)
+        })
       },
     }
   })

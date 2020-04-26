@@ -43,10 +43,10 @@ func main() {
 	e := setupEcho()
 
 	e.POST("/api/question/regist", controller.InsertQuestion) // 管理画面用:問題登録
-	e.POST("api/question/update", controller.UpdateQuestion)  // 管理画面用:問題更新
+	e.POST("/api/question/update", controller.UpdateQuestion) // 管理画面用:問題更新
 	e.POST("/api/question/select", controller.SelectQuestion) // 管理画面用:問題検索
 	e.POST("/api/question/quiz", controller.GetQuestion)      // 出題
-	//e.POST("api/question/answer", controller.JudgeAnswer)     // 回答判定
+	e.POST("/api/question/answer", controller.JudgeAnswer)    // 回答判定
 	e.Static("/", "static/")
 	e.Logger.Fatal(e.Start(":8080"))
 }

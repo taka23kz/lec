@@ -34,6 +34,13 @@ type Quiz struct {
 	Choices      []Choice
 }
 
+// Answer ユーザーの回答
+type Answer struct {
+	QuestionID int64 `json:"questionId"`
+	Choice     int64 `json:"choice"`
+	Correct    bool  `json:"correct"`
+}
+
 func printQuestion(q Question) {
 	fmt.Println("QuestionID:", q.QuestionID)
 	fmt.Println("Question:", q.Question)
@@ -138,6 +145,41 @@ func (controller *Controller) SelectQuestion(c echo.Context) error {
 	return c.JSON(http.StatusOK, questions)
 }
 
+// JudgeAnswer is judge user answer
+func (controller *Controller) JudgeAnswer(c echo.Context) error {
+	var answer Answer
+	var choices []Choice
+	if err := c.Bind(&answer); err != nil {
+		c.Logger().Error("Bind: ", err)
+		return c.String(http.StatusBadRequest, "Bind: "+err.Error())
+	}
+	fmt.Println(answer.Choice)
+
+	// questionIDでchoiceを検索し、全ての正解を選択できているかを判定する。
+	_, err := controller.dbmap.Select(&choices,
+		"SELECT * FROM t_choice where question_id = $1", answer.QuestionID)
+	if err != nil {
+		c.Logger().Error("Select: ", err)
+		return c.String(http.StatusBadRequest, "Select: "+err.Error())
+	}
+
+	// 正解判定
+	answer.Correct = true
+	for _, c := range choices {
+		if c.Correct && answer.Choice != c.ChoiceID {
+			// 正解の選択肢を選択していなければ不正解
+			answer.Correct = false
+			break
+
+		} else if !c.Correct && answer.Choice == c.ChoiceID {
+			// 不正解の選択肢を選択していれば不正解
+			answer.Correct = false
+			break
+		}
+	}
+	return c.JSON(http.StatusOK, answer)
+}
+
 // GetQuestion is GET question to return question
 func (controller *Controller) GetQuestion(c echo.Context) error {
 	var questions []Question
@@ -169,11 +211,6 @@ func (controller *Controller) GetQuestion(c echo.Context) error {
 	return c.JSON(http.StatusOK, quiz)
 }
 
-/*
-func (controller *Controller) JudgeAnswer(c echo.Context) error {
-	return nil
-}
-*/
 func attachTable(controller *Controller) {
 	question := controller.dbmap.AddTableWithName(Question{}, "t_question")
 	question.ColMap("AnswerType").Rename("answer_type")

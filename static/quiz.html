@@ -16,7 +16,7 @@
       </div>
       <div v-if="question.answerType === '02'">
         <label v-for="choice in choices">
-          <input type="checkbox" name="choiceId" v-model="choiceId" :value="choice.choiceId">{{ choice.choiceLabel }}
+          <input type="checkbox" :id="choice.choiceId" :value="choice.choiceId" v-model="choiceIds">{{ choice.choiceLabel }}
         </label>
       </div>
       <button v-on:click="answer">回答</button>
