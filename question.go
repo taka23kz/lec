@@ -36,9 +36,14 @@ type Quiz struct {
 
 // Answer ユーザーの回答
 type Answer struct {
-	QuestionID int64 `json:"questionId"`
-	Choice     int64 `json:"choice"`
-	Correct    bool  `json:"correct"`
+	// input field
+	QuestionID int64   `json:"questionId"`
+	Choice     int64   `json:"choice"`
+	ChoiceIDs  []int64 `json:"choiceIds"`
+	AnswerType string  `json:"answerType"`
+
+	// response field
+	Correct bool `json:"correct"`
 }
 
 func printQuestion(q Question) {
@@ -153,7 +158,6 @@ func (controller *Controller) JudgeAnswer(c echo.Context) error {
 		c.Logger().Error("Bind: ", err)
 		return c.String(http.StatusBadRequest, "Bind: "+err.Error())
 	}
-	fmt.Println(answer.Choice)
 
 	// questionIDでchoiceを検索し、全ての正解を選択できているかを判定する。
 	_, err := controller.dbmap.Select(&choices,
@@ -162,19 +166,50 @@ func (controller *Controller) JudgeAnswer(c echo.Context) error {
 		c.Logger().Error("Select: ", err)
 		return c.String(http.StatusBadRequest, "Select: "+err.Error())
 	}
-
+	c.Logger().Info("answer:", answer, "choices:", choices)
 	// 正解判定
 	answer.Correct = true
-	for _, c := range choices {
-		if c.Correct && answer.Choice != c.ChoiceID {
-			// 正解の選択肢を選択していなければ不正解
-			answer.Correct = false
-			break
 
-		} else if !c.Correct && answer.Choice == c.ChoiceID {
-			// 不正解の選択肢を選択していれば不正解
-			answer.Correct = false
-			break
+	if answer.AnswerType == "01" {
+		// 単一選択
+		for _, c := range choices {
+			if c.Correct && answer.Choice != c.ChoiceID {
+				// 正解の選択肢を選択していなければ不正解
+				answer.Correct = false
+				break
+
+			} else if !c.Correct && answer.Choice == c.ChoiceID {
+				// 不正解の選択肢を選択していれば不正解
+				answer.Correct = false
+				break
+			}
+		}
+	} else if answer.AnswerType == "02" {
+		// 複数選択
+		// 選択肢分ループ
+		for _, c := range choices {
+			// 選択肢を選ぶのが正解の場合
+			if c.Correct {
+				// ユーザの回答分ループ
+				var choiceFlg bool = false
+
+				for _, choiceID := range answer.ChoiceIDs {
+					if c.ChoiceID == choiceID {
+						choiceFlg = true // 正解の選択肢を選択されていた。
+					}
+				}
+				if !choiceFlg {
+					answer.Correct = false
+				}
+			} else {
+				// 選択肢を選ばないのが正解の場合
+				for _, choiceID := range answer.ChoiceIDs {
+					if c.ChoiceID == choiceID {
+						// 選択されていたので不正解
+						answer.Correct = false
+					}
+				}
+			}
 		}
 	}
 	return c.JSON(http.StatusOK, answer)

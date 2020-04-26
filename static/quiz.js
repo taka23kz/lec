@@ -41,10 +41,21 @@ const quiz = new Vue({
         quiz.quiz();
       },
       answer: () => {
-        const payload = {
-          'questionID' : quiz.question.questionId,
-          'choice' : quiz.choiceId
+        var payload;
+        if ( quiz.question.answerType == "01" ) {
+          payload = {
+            'questionID' : quiz.question.questionId,
+            'answerType' : quiz.question.answerType,
+            'choice' : quiz.choiceId
+          }
+        } else if( quiz.question.answerType == "02" ) {
+          payload = {
+            'questionID' : quiz.question.questionId,
+            'answerType' : quiz.question.answerType,
+            'choiceIds' : quiz.choiceIds
+          }
         }
+        //alert(payload.choiceIds);
         axios.post('api/question/answer', payload)
         .then((response) => {
           if ( response.data.correct ) {
