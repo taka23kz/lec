@@ -9,41 +9,53 @@ import (
 	"github.com/labstack/echo"
 )
 
-// Choice is a strucct to hold unit of request and response
+/*
+Choice ...
+ t_choiceの内容を保持するための構造体
+*/
 type Choice struct {
-	ChoiceID    int64  `json:"choiceId" form:"choiceId" db:"choice_id,primarykey,autoincrement"`
-	QuestionID  int64  `json:"questionId" form:"questionId" db:"question_id,notnull"`
-	ChoiceLabel string `json:"choiceLabel" form:"choiceLabel" db:"choice_label,notnull"`
-	Correct     bool   `json:"correct" form:"correct" db:"correct,notnull"`
+	ChoiceID    int64  `json:"choiceId" form:"choiceId" db:"choice_id,primarykey,autoincrement"` // 問題に対する選択肢を一意に特定するためのID
+	QuestionID  int64  `json:"questionId" form:"questionId" db:"question_id,notnull"`            // 問題を一意に特定するためのキー
+	ChoiceLabel string `json:"choiceLabel" form:"choiceLabel" db:"choice_label,notnull"`         // 選択肢
+	Correct     bool   `json:"correct" form:"correct" db:"correct,notnull"`                      // 選択肢が正解かを判別するためのフラグ
 }
 
-// Question is a struct to hold unit of request and response
+/*
+Question ...
+ t_questionの内容を保持するための構造体
+*/
 type Question struct {
-	QuestionID   int64  `json:"questionId" form:"questionId" db:"question_id,primarykey,autoincrement"`
-	Question     string `json:"question" form:"question" db:"question,notnull"`
-	AnswerType   string `json:"answerType" form:answerType" db:"answer_type,notnull,size:2"`
-	ChoiceNum    int    `json:"choiceNum" form:choiceNum" db:"choice_num,notnull"`
-	OwnerGroupID int64  `json:"ownerGroupId" form:ownerGroupId" db:"owner_group_id,notnull"`
-	LessonID     int64  `json:"lessonId" form:lessonId" db:"lesson_id,notnull"`
+	QuestionID   int64  `json:"questionId" form:"questionId" db:"question_id,primarykey,autoincrement"` // 問題を一意に特定するためのキー
+	Question     string `json:"question" form:"question" db:"question,notnull"`                         // 問題文
+	AnswerType   string `json:"answerType" form:"answerType" db:"answer_type,notnull,size:2"`           // 回答の形式 ラジオボタン形式、チェックボックス形式、etc..詳細はddl.sql参照
+	ChoiceNum    int    `json:"choiceNum" form:"choiceNum" db:"choice_num,notnull"`                     // 回答として表示する選択肢の数
+	OwnerGroupID int64  `json:"ownerGroupId" form:"ownerGroupId" db:"owner_group_id,notnull"`           // 問題のオーナーグループのID
+	LessonID     int64  `json:"lessonId" form:"lessonId" db:"lesson_id,notnull"`                        // 問題のLESSONのID
 }
 
-// Quiz 問題とその選択肢を格納する構造体
+/*
+Quiz ...
+ quiz.htmlで出題する問題とその選択肢を保持するための構造体
+*/
 type Quiz struct {
-	OwnerGroupID int64 `json:"ownerGroupId" form:ownerGroupId"`
-	Question     Question
-	Choices      []Choice
+	OwnerGroupID int64    `json:"ownerGroupId" form:"ownerGroupId"` // 問題のオーナグループのID
+	Question     Question // 問題を格納している構造体
+	Choices      []Choice // 選択肢構造体のリスト
 }
 
-// Answer ユーザーの回答
+/*
+Answer ...
+ quiz.htmlで出題された問題に対するユーザの回答
+*/
 type Answer struct {
 	// input field
-	QuestionID int64   `json:"questionId"`
-	Choice     int64   `json:"choice"`
-	ChoiceIDs  []int64 `json:"choiceIds"`
-	AnswerType string  `json:"answerType"`
+	QuestionID int64   `json:"questionId"` // quiz.htmlで出題された問題のID
+	Choice     int64   `json:"choice"`     // radioボタン形式の場合に選択した回答の選択ID
+	ChoiceIDs  []int64 `json:"choiceIds"`  // チェックボックス形式の場合に選択した回答の選択IDのリスト
+	AnswerType string  `json:"answerType"` // 回答の形式 ラジオボタン形式、チェックボックス形式、etc..詳細はddl.sql参照
 
 	// response field
-	Correct bool `json:"correct"`
+	Correct bool `json:"correct"` // ユーザの回答結果が正解か不正解かのフラグ
 }
 
 func printQuestion(q Question) {
@@ -170,8 +182,9 @@ func (controller *Controller) JudgeAnswer(c echo.Context) error {
 	// 正解判定
 	answer.Correct = true
 
+	// 回答の方法によって正解判定を切り分け
 	if answer.AnswerType == "01" {
-		// 単一選択
+		// 単一選択形式(ラジオボタン)
 		for _, c := range choices {
 			if c.Correct && answer.Choice != c.ChoiceID {
 				// 正解の選択肢を選択していなければ不正解
@@ -185,7 +198,7 @@ func (controller *Controller) JudgeAnswer(c echo.Context) error {
 			}
 		}
 	} else if answer.AnswerType == "02" {
-		// 複数選択
+		// 複数選択形式(チェックボックス)
 		// 選択肢分ループ
 		for _, c := range choices {
 			// 選択肢を選ぶのが正解の場合
@@ -222,19 +235,25 @@ func (controller *Controller) GetQuestion(c echo.Context) error {
 	var quiz Quiz
 
 	attachTable(controller)
+
 	// bind request to question struct
 	if err := c.Bind(&quiz); err != nil {
 		c.Logger().Error("Bind quiz: ", err)
 		return c.String(http.StatusBadRequest, "Bind quiz: "+err.Error())
 	}
+
+	// オーナグループIDに紐づく問題を全て取得する。
 	_, err := controller.dbmap.Select(&questions, "SELECT * FROM t_question where owner_group_id = $1", quiz.OwnerGroupID)
 	if err != nil {
 		c.Logger().Error("getQuestion(select t_question): ", err)
 		return c.String(http.StatusBadRequest, "getQuestion(select t_question): "+err.Error())
 	}
+
+	// 取得した問題リストの中からランダムに決定した1問を出題用のquiz構造体に格納する。
 	rand.Seed(time.Now().UnixNano())
 	quiz.Question = questions[rand.Intn(len(questions))]
 
+	// quiestion_idに紐づく選択肢を取得する。
 	_, err = controller.dbmap.Select(&choices, "SELECT * FROM t_choice where question_id = $1", quiz.Question.QuestionID)
 	if err != nil {
 		c.Logger().Error("getQuestion(select t_choice): ", err)
