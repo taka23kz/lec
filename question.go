@@ -9,55 +9,6 @@ import (
 	"github.com/labstack/echo"
 )
 
-/*
-Choice ...
- t_choiceの内容を保持するための構造体
-*/
-type Choice struct {
-	ChoiceID    int64  `json:"choiceId" form:"choiceId" db:"choice_id,primarykey,autoincrement"` // 問題に対する選択肢を一意に特定するためのID
-	QuestionID  int64  `json:"questionId" form:"questionId" db:"question_id,notnull"`            // 問題を一意に特定するためのキー
-	ChoiceLabel string `json:"choiceLabel" form:"choiceLabel" db:"choice_label,notnull"`         // 選択肢
-	Correct     bool   `json:"correct" form:"correct" db:"correct,notnull"`                      // 選択肢が正解かを判別するためのフラグ
-}
-
-/*
-Question ...
- t_questionの内容を保持するための構造体
-*/
-type Question struct {
-	QuestionID   int64  `json:"questionId" form:"questionId" db:"question_id,primarykey,autoincrement"` // 問題を一意に特定するためのキー
-	Question     string `json:"question" form:"question" db:"question,notnull"`                         // 問題文
-	AnswerType   string `json:"answerType" form:"answerType" db:"answer_type,notnull,size:2"`           // 回答の形式 ラジオボタン形式、チェックボックス形式、etc..詳細はddl.sql参照
-	ChoiceNum    int    `json:"choiceNum" form:"choiceNum" db:"choice_num,notnull"`                     // 回答として表示する選択肢の数
-	OwnerGroupID int64  `json:"ownerGroupId" form:"ownerGroupId" db:"owner_group_id,notnull"`           // 問題のオーナーグループのID
-	LessonID     int64  `json:"lessonId" form:"lessonId" db:"lesson_id,notnull"`                        // 問題のLESSONのID
-}
-
-/*
-Quiz ...
- quiz.htmlで出題する問題とその選択肢を保持するための構造体
-*/
-type Quiz struct {
-	OwnerGroupID int64    `json:"ownerGroupId" form:"ownerGroupId"` // 問題のオーナグループのID
-	Question     Question // 問題を格納している構造体
-	Choices      []Choice // 選択肢構造体のリスト
-}
-
-/*
-Answer ...
- quiz.htmlで出題された問題に対するユーザの回答
-*/
-type Answer struct {
-	// input field
-	QuestionID int64   `json:"questionId"` // quiz.htmlで出題された問題のID
-	Choice     int64   `json:"choice"`     // radioボタン形式の場合に選択した回答の選択ID
-	ChoiceIDs  []int64 `json:"choiceIds"`  // チェックボックス形式の場合に選択した回答の選択IDのリスト
-	AnswerType string  `json:"answerType"` // 回答の形式 ラジオボタン形式、チェックボックス形式、etc..詳細はddl.sql参照
-
-	// response field
-	Correct bool `json:"correct"` // ユーザの回答結果が正解か不正解かのフラグ
-}
-
 func printQuestion(q Question) {
 	fmt.Println("QuestionID:", q.QuestionID)
 	fmt.Println("Question:", q.Question)

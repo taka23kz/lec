@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>問題一覧</title>
+  <script src="http://unpkg.com/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div id="qlist">
+    <input v-model="questionId">
+    <select v-model="selectLesson">
+      <option value="0">全て</option>
+      <option v-for="lesson in lessons" :value="lesson.lessonId">
+       {{ lesson.lessonName }}
+      </option>
+     </select>
+    <!--<button v-on:click="select">検索</button>-->
+  </div>
+  <script src="/qlist.js"></script>
+</body>
+</html>

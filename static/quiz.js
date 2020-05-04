@@ -4,7 +4,7 @@ const quiz = new Vue({
       ownerGroupID: 1,
       question : {
         questionId : '',
-        question : '',
+        question : '',    // 画面に表示する問題文
         answerType : '',
         choiceNum : '',
         ownerGroupId : '',
@@ -12,7 +12,7 @@ const quiz = new Vue({
       },
       choiceId : '',
       choiceIds : [],
-      choices : []
+      choices : []      // 画面に表示する選択肢のリスト
     },
     methods: {
       // 出題用のquiz情報を初期化する。
@@ -30,11 +30,12 @@ const quiz = new Vue({
           quiz.question.answerType = response.data.Question.answerType;
 
           response.data.Choices.forEach(function(v,i) {
-            quiz.choices[i] = new Object();
-            quiz.choices[i].choiceId = v.choiceId;
-            quiz.choices[i].questionId = v.questionId;
-            quiz.choices[i].choiceLabel = v.choiceLabel;
-            quiz.choices[i].correct = v.correct;
+            quiz.choices[i] = {
+              "choiceId" : v.choiceId,
+              "questionId" : v.questionId,
+              "choiceLabel" : v.choiceLabel,
+              "correct" : v.correct
+            }
           });
         })
         .catch((err) => {

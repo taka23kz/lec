@@ -45,8 +45,16 @@ func main() {
 	e.POST("/api/question/regist", controller.InsertQuestion) // 管理画面用:問題登録
 	e.POST("/api/question/update", controller.UpdateQuestion) // 管理画面用:問題更新
 	e.POST("/api/question/select", controller.SelectQuestion) // 管理画面用:問題検索
-	e.POST("/api/question/quiz", controller.GetQuestion)      // 出題
-	e.POST("/api/question/answer", controller.JudgeAnswer)    // 回答判定
+
+	// 検索画面(qlist.html)で使用するapi
+	e.POST("/api/qlist/init", controller.InitQList)
+
+	//	e.POST("/api/question/list", controller.GetQuestionList)  // 問題の一覧取得
+
+	// 出題＆回答画面(quiz.html)で使用するapi
+	e.POST("/api/question/quiz", controller.GetQuestion)   // 出題
+	e.POST("/api/question/answer", controller.JudgeAnswer) // 回答判定
+
 	e.Static("/", "static/")
 	e.Logger.Fatal(e.Start(":8080"))
 }
