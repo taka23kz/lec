@@ -103,6 +103,6 @@ SearchCondition ...
  qlist.htmlで設定された検索情報を保持する構造体
 */
 type SearchCondition struct {
-	OwnerGroupID int64
-	LessonID     int64
+	OwnerGroupID   int64 `json:"ownerGroupId"`
+	SelectedLesson int64 `json:"selectedLesson"`
 }

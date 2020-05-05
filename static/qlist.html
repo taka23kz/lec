@@ -9,13 +9,33 @@
 <body>
   <div id="qlist">
     <input v-model="questionId">
-    <select v-model="selectLesson">
-      <option value="0">全て</option>
+    <select v-model="selectedLesson">
       <option v-for="lesson in lessons" :value="lesson.lessonId">
        {{ lesson.lessonName }}
       </option>
      </select>
-    <!--<button v-on:click="select">検索</button>-->
+    <button v-on:click="search">検索</button>
+
+    <table>
+      <thead>
+        <th>
+          #
+        </th>
+        <th>
+          問題文
+        </th>
+      </thead>
+      <tbody>
+        <tr v-for="question in questions">
+          <td>
+            {{question.questionId}}
+          </td>
+          <td>
+            {{question.question}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   <script src="/qlist.js"></script>
 </body>

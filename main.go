@@ -48,8 +48,7 @@ func main() {
 
 	// 検索画面(qlist.html)で使用するapi
 	e.POST("/api/qlist/init", controller.InitQList)
-
-	//	e.POST("/api/question/list", controller.GetQuestionList)  // 問題の一覧取得
+	e.POST("/api/qlist/list", controller.SearchQuestion) // 問題の一覧取得
 
 	// 出題＆回答画面(quiz.html)で使用するapi
 	e.POST("/api/question/quiz", controller.GetQuestion)   // 出題
