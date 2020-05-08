@@ -1,0 +1,19 @@
+body {
+    font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+}
+
+a.button, input.button, button {
+    padding: 0.75em 2em;
+    border-radius: 2em;
+    display: inline-block;
+    color: #fff;
+    background-color: #4fc08d;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+    border: 1px solid #4fc08d;
+}
+
+a.button.white, input.button.white, button.white {
+    background-color: #fff;
+    color: #42b983;
+}
