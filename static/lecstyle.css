@@ -1,6 +1,38 @@
 body {
     font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #304455;
 }
+@media screen and (max-width: 900px) {
+    body {
+        -webkit-text-size-adjust: none;
+        font-size: 14px;
+    }    
+}
+
+.content > table th, .content > table tr:nth-child(2n) {
+    background-color: #f8f8f8;
+}
+
+.content > table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin: 1.2em auto;
+    padding: 0;
+    display: block;
+    overflow-x: auto;
+}
+
+table {
+    display: table;
+    border-collapse: separate;
+    box-sizing: border-box;
+    border-spacing: 2px;
+    border-color: grey;
+}
+
+
 
 a.button, input.button, button {
     padding: 0.75em 2em;
@@ -17,3 +49,6 @@ a.button.white, input.button.white, button.white {
     background-color: #fff;
     color: #42b983;
 }
+
+
+
