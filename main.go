@@ -54,6 +54,9 @@ func main() {
 	e.POST("/api/question/quiz", controller.GetQuestion)   // 出題
 	e.POST("/api/question/answer", controller.JudgeAnswer) // 回答判定
 
+	// ユーザ登録画面(signup.html)で使用するapi
+	e.POST("/api/signup/signup", controller.Signup) // ユーザ登録
+
 	e.Static("/", "static/")
 	e.Logger.Fatal(e.Start(":8080"))
 }

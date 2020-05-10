@@ -6,6 +6,10 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
+/*
+共通で使用する構造体は、このファイルに定義する。
+*/
+
 // Controller is a controller for this application.
 type Controller struct {
 	dbmap *gorp.DbMap

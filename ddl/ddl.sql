@@ -1,18 +1,23 @@
+-- 講義のオーナーテーブル
 create table t_owner 
 (
 	owner_id SERIAL not null,
 	owner_name varchar(200) not null,
+	password text not null,
 	primary key (owner_id)
 );
 
+-- 講義のオーナーが所属するグループ(組織)のテーブル
 create table t_owner_group
 (
 	owner_group_id SERIAL not null,
 	owner_id int not null references t_owner(owner_id),
 	owner_group_name varchar(200) not null,
+	parent_owner_group_id int references t_owner_group(owner_group_id),
 	primary key (owner_group_id)
 );
 
+-- 講義テーブル
 create table t_lesson
 (
 	lesson_id SERIAL not null,
