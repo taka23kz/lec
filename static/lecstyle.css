@@ -43,6 +43,7 @@ a.button, input.button, button {
     transition: all 0.15s ease;
     box-sizing: border-box;
     border: 1px solid #4fc08d;
+    cursor: pointer;
 }
 
 a.button.white, input.button.white, button.white {

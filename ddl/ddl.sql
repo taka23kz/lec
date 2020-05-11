@@ -1,11 +1,32 @@
--- 講義のオーナーテーブル
-create table t_owner 
+-- ユーザテーブル
+create table t_user 
 (
-	owner_id SERIAL not null,
-	owner_name varchar(200) not null,
-	password text not null,
-	primary key (owner_id)
+	id SERIAL not null, 
+	user_id varchar(30),
+	user_name varchar(200) not null,
+	mail_address varchar(300) not null,
+	user_type varchar(2) not null, 	-- 00:管理者,10:受講者,99:Guest
+	user_status varchar(2) not null, -- 00:仮登録状態,10:登録状態,20:停止状態
+	limit_flag boolean,  -- true:有料機能制限あり, false:有料機能制限なし
+	passwd text not null,
+	primary key (id)
 );
+
+-- 組織テーブル
+create table t_org
+(
+	id SERIAL not null, 
+	org_name varchar(200) unique not null,
+	parent_org_id int references t_org(id),
+	primary key (id)
+)
+
+-- ユーザと組織を紐づけるためのテーブル
+create table t_user_org_rel
+(
+	user_id int references t_user(id),
+	org_id int references t_org(id)
+)
 
 -- 講義のオーナーが所属するグループ(組織)のテーブル
 create table t_owner_group

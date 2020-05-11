@@ -40,6 +40,8 @@ func main() {
 	}
 	controller := &Controller{dbmap: dbmap}
 
+	attachTable(controller)
+
 	e := setupEcho()
 
 	e.POST("/api/question/regist", controller.InsertQuestion) // 管理画面用:問題登録
@@ -135,4 +137,30 @@ func loadConfig() (*config, error) {
 	var cfg config
 	err = yaml.NewDecoder(f).Decode(&cfg)
 	return &cfg, err
+}
+
+/*
+  テーブルのカラム名と構造体のフィールド名のマッピングを行う。
+
+  gorpのdb:"column_name"を使っても期待どおりに構造体と
+  マッピングできていなかったのでこの方法で愚直にマッピングしています。
+*/
+func attachTable(controller *Controller) {
+	user := controller.dbmap.AddTableWithName(User{}, "t_user")
+	user.ColMap("UserName").Rename("user_name")
+	user.ColMap("MailAddress").Rename("mail_address")
+	user.ColMap("UserType").Rename("user_type")
+	user.ColMap("UserStatus").Rename("user_status")
+	user.ColMap("LimitFlag").Rename("limit_flag")
+
+	question := controller.dbmap.AddTableWithName(Question{}, "t_question")
+	question.ColMap("AnswerType").Rename("answer_type")
+	question.ColMap("ChoiceNum").Rename("choice_num")
+	question.ColMap("OwnerGroupID").Rename("owner_group_id")
+	question.ColMap("LessonID").Rename("lesson_id")
+
+	choice := controller.dbmap.AddTableWithName(Choice{}, "t_choice")
+	choice.ColMap("ChoiceID").Rename("choice_id")
+	choice.ColMap("QuestionID").Rename("question_id")
+	choice.ColMap("ChoiceLabel").Rename("choice_label")
 }

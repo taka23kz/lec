@@ -215,16 +215,3 @@ func (controller *Controller) GetQuestion(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, quiz)
 }
-
-func attachTable(controller *Controller) {
-	question := controller.dbmap.AddTableWithName(Question{}, "t_question")
-	question.ColMap("AnswerType").Rename("answer_type")
-	question.ColMap("ChoiceNum").Rename("choice_num")
-	question.ColMap("OwnerGroupID").Rename("owner_group_id")
-	question.ColMap("LessonID").Rename("lesson_id")
-
-	choice := controller.dbmap.AddTableWithName(Choice{}, "t_choice")
-	choice.ColMap("ChoiceID").Rename("choice_id")
-	choice.ColMap("QuestionID").Rename("question_id")
-	choice.ColMap("ChoiceLabel").Rename("choice_label")
-}

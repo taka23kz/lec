@@ -2,16 +2,20 @@ const signup = new Vue({
     el: '#signup',
     data: {
       // 登録内容
+      userId : null,
       userName : null,      // 登録するユーザ名
-      password : null,      // 登録するユーザのパスワード
-      password2 : null,      // 登録するユーザのパスワード(確認用)
+      mailAddress : null, 
+      passwd : null,      // 登録するユーザのパスワード
+      passwd2 : null      // 登録するユーザのパスワード(確認用)
     },
     methods: {
       signup: () => {
         const payload = {
+          'userId'  : signup.userId,
           'userName' : signup.userName,
-          'password' : signup.password,
-          'password2' : signup.password2
+          'mailAddress' : signup.mailAddress,
+          'passwd' : signup.passwd,
+          'passwd2' : signup.passwd2
         }
         axios.post('api/signup/signup', payload)
         .then((response) => {
