@@ -1,25 +1,44 @@
 -- ユーザテーブル
+-- 講義を作成する親ユーザ
 create table t_user 
 (
-	id SERIAL not null, 
-	user_id varchar(30),
+	id varchar(30),
 	user_name varchar(200) not null,
 	mail_address varchar(300) not null,
-	user_type varchar(2) not null, 	-- 00:管理者,10:受講者,99:Guest
 	user_status varchar(2) not null, -- 00:仮登録状態,10:登録状態,20:停止状態
 	limit_flag boolean,  -- true:有料機能制限あり, false:有料機能制限なし
 	passwd text not null,
-	primary key (id)
+	delete_flag boolean, -- true:無効データ, false:有効データ
+	Created timestamp DEFAULT CURRENT_TIMESTAMP,
+	Updated timestamp DEFAULT CURRENT_TIMESTAMP,
+	primary key (user_id)
 );
 
--- 組織テーブル
-create table t_org
+-- 受講者テーブル
+-- 講義を受けるユーザ用のテーブル
+create table t_student
 (
-	id SERIAL not null, 
-	org_name varchar(200) unique not null,
-	parent_org_id int references t_org(id),
+	id varchar(30),
+	owner_user_id varchar(30) references t_user(id),
+	family_name varchar(100) not null,
+	first_name varchar(100) not null,
+	mail_address varchar(300),
+	passwd text not null,
+	delete_flag boolean, -- true:無効データ, false:有効データ
+	Created timestamp DEFAULT CURRENT_TIMESTAMP,
+	Updated timestamp DEFAULT CURRENT_TIMESTAMP,
+	primary key (id, owner_user_id)
+);
+
+-- グループテーブル
+create table t_group
+(
+	id SERIAL not null,
+	group_name varchar(300) not null,
+	owner_user_id varchar(30) references t_user(id),
 	primary key (id)
 )
+
 
 -- ユーザと組織を紐づけるためのテーブル
 create table t_user_org_rel
@@ -71,10 +90,6 @@ create table t_choice
 	correct boolean not null,										-- true:正解 false:不正解
 	primary key (choice_id)
 );
-
-
-
-
 
 
 

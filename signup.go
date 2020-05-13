@@ -11,12 +11,15 @@ Signup ...
  サインアップ画面の入力内容を保持するための構造体
 */
 type Signup struct {
+	// input
 	UserID      string `json:"userId"`
 	UserName    string `json:"userName"`
 	MailAddress string `json:"mailAddress"`
 	Passwd      string `json:"passwd"`
 	Passwd2     string `json:"passwd2"`
-	Message     string `json:"message"`
+
+	// output
+	Message string `json:"message"`
 }
 
 /*
@@ -75,6 +78,10 @@ func (controller *Controller) Signup(c echo.Context) error {
 	return c.JSON(http.StatusOK, signup)
 }
 
+/*
+ createUser
+ サインアップ画面で登録するユーザ情報を作成する。
+*/
 func createUser(signup Signup, userType string, userStatus string, limitFlag bool) *User {
 	var user User
 	user.UserID = signup.UserID

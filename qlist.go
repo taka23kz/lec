@@ -9,7 +9,7 @@ import (
 )
 
 /*
-QListInit ...
+InitQList ...
  問題検索画面の初期表示用API
 */
 func (controller *Controller) InitQList(c echo.Context) error {

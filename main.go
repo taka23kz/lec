@@ -146,6 +146,7 @@ func loadConfig() (*config, error) {
   マッピングできていなかったのでこの方法で愚直にマッピングしています。
 */
 func attachTable(controller *Controller) {
+	// t_user
 	user := controller.dbmap.AddTableWithName(User{}, "t_user")
 	user.ColMap("UserName").Rename("user_name")
 	user.ColMap("MailAddress").Rename("mail_address")
@@ -153,12 +154,14 @@ func attachTable(controller *Controller) {
 	user.ColMap("UserStatus").Rename("user_status")
 	user.ColMap("LimitFlag").Rename("limit_flag")
 
+	// t_question
 	question := controller.dbmap.AddTableWithName(Question{}, "t_question")
 	question.ColMap("AnswerType").Rename("answer_type")
 	question.ColMap("ChoiceNum").Rename("choice_num")
 	question.ColMap("OwnerGroupID").Rename("owner_group_id")
 	question.ColMap("LessonID").Rename("lesson_id")
 
+	// t_choice
 	choice := controller.dbmap.AddTableWithName(Choice{}, "t_choice")
 	choice.ColMap("ChoiceID").Rename("choice_id")
 	choice.ColMap("QuestionID").Rename("question_id")
