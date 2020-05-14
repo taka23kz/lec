@@ -150,7 +150,6 @@ func attachTable(controller *Controller) {
 	user := controller.dbmap.AddTableWithName(User{}, "t_user")
 	user.ColMap("UserName").Rename("user_name")
 	user.ColMap("MailAddress").Rename("mail_address")
-	user.ColMap("UserType").Rename("user_type")
 	user.ColMap("UserStatus").Rename("user_status")
 	user.ColMap("LimitFlag").Rename("limit_flag")
 

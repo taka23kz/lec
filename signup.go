@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo"
 )
@@ -46,7 +47,7 @@ func (controller *Controller) Signup(c echo.Context) error {
 	}
 
 	// 同一ユーザ存在チェック
-	query := "SELECT * FROM t_user where user_id = $1"
+	query := "SELECT * FROM t_user where id = $1"
 	queryParam = append(queryParam, signup.UserID)
 
 	_, err := controller.dbmap.Select(&userRows, query, queryParam...)
@@ -65,8 +66,8 @@ func (controller *Controller) Signup(c echo.Context) error {
 	// 同名のユーザがいないので登録可能
 	// 登録情報を作成してユーザ登録
 	// サインアップ時はサインアップ画面の入力内容＋
-	// 「00:管理者,00:仮登録状態,true:有料機能制限あり」で登録する。
-	user := createUser(signup, "00", "00", true)
+	// 「00:仮登録状態,true:有料機能制限あり」で登録する。
+	user := createUser(signup, "00", true)
 	err = controller.dbmap.Insert(user)
 
 	if err != nil {
@@ -82,15 +83,16 @@ func (controller *Controller) Signup(c echo.Context) error {
  createUser
  サインアップ画面で登録するユーザ情報を作成する。
 */
-func createUser(signup Signup, userType string, userStatus string, limitFlag bool) *User {
+func createUser(signup Signup, userStatus string, limitFlag bool) *User {
 	var user User
-	user.UserID = signup.UserID
+	user.ID = signup.UserID
 	user.UserName = signup.UserName
 	user.MailAddress = signup.MailAddress
-	user.UserType = userType
 	user.UserStatus = userStatus
 	user.LimitFlag = limitFlag
 	user.Passwd = signup.Passwd
+	user.Created = time.Now()
+	user.Updated = time.Now()
 
 	return &user
 }

@@ -11,7 +11,7 @@ create table t_user
 	delete_flag boolean, -- true:無効データ, false:有効データ
 	Created timestamp DEFAULT CURRENT_TIMESTAMP,
 	Updated timestamp DEFAULT CURRENT_TIMESTAMP,
-	primary key (user_id)
+	primary key (id)
 );
 
 -- 受講者テーブル

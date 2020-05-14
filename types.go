@@ -33,14 +33,13 @@ User ...
  t_userの内容を保持するための構造体
 */
 type User struct {
-	ID          int64     `json:"id" form:"id" db:"id,primarykey,autoincrement"`
-	UserID      string    `json:"userId" form:"userId" db:"user_id"`
+	ID          string    `json:"Id" form:"Id" db:"id"`
 	UserName    string    `json:"userName" form:"userName" db:"user_name,notnull"`
 	MailAddress string    `json:"mailAddress" form:"mailAddress" db:"mail_address,notnull"`
-	UserType    string    `json:"userType" form:"userType" db:"user_type,notnull"`
 	UserStatus  string    `json:"userStatus" form:"userStatus" db:"user_status,notnull"`
 	LimitFlag   bool      `json:"limitFlag" form:"limitFlag" db:"limit_flag,notnull"`
 	Passwd      string    `json:"passwd" form:"passwd" db:"passwd,notnull"`
+	DeleteFlag  bool      `json:"deleteFlag" form:"deleteFlag" db:"delete_flag,notnull"`
 	Created     time.Time `json:"created" db:"created,notnull"`
 	Updated     time.Time `json:"updated" db:"updated,notnull"`
 }
