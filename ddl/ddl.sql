@@ -2,9 +2,9 @@
 -- 講義を作成する親ユーザ
 create table t_user 
 (
-	id varchar(30),
-	user_name varchar(200) not null,
+	id SERIAL not null,
 	mail_address varchar(300) not null,
+	user_name varchar(200) not null,
 	user_status varchar(2) not null, -- 00:仮登録状態,10:登録状態,20:停止状態
 	limit_flag boolean,  -- true:有料機能制限あり, false:有料機能制限なし
 	passwd text not null,

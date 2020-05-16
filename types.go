@@ -33,9 +33,9 @@ User ...
  t_userの内容を保持するための構造体
 */
 type User struct {
-	ID          string    `json:"Id" form:"Id" db:"id"`
-	UserName    string    `json:"userName" form:"userName" db:"user_name,notnull"`
+	ID          string    `json:"Id" form:"Id" db:"id,primarykey,autoincrement"`
 	MailAddress string    `json:"mailAddress" form:"mailAddress" db:"mail_address,notnull"`
+	UserName    string    `json:"userName" form:"userName" db:"user_name,notnull"`
 	UserStatus  string    `json:"userStatus" form:"userStatus" db:"user_status,notnull"`
 	LimitFlag   bool      `json:"limitFlag" form:"limitFlag" db:"limit_flag,notnull"`
 	Passwd      string    `json:"passwd" form:"passwd" db:"passwd,notnull"`

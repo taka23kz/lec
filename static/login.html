@@ -3,12 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <link href="/lecstyle.css" rel="stylesheet">
+  <script src="http://unpkg.com/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <title>login</title>
 </head>
 <body>
-    <div>
-        <p>ユーザID</p><input type="text">
-        <p>パスワード</p><input type="password">
+    <div id="login">
+        <p>メールアドレス</p><input type="text"　v-model="mailAddress">
+        <p>パスワード</p><input type="password"　v-model="passwd">
         <button class="white" v-on:click="login">ログイン</button>
     </div>
+    <script src="/login.js"></script>
 </body>

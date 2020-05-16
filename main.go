@@ -59,6 +59,9 @@ func main() {
 	// ユーザ登録画面(signup.html)で使用するapi
 	e.POST("/api/signup/signup", controller.Signup) // ユーザ登録
 
+	// ログイン画面(login.html)で使用するapi
+	e.POST("api/login", controller.Login) // ログイン
+
 	e.Static("/", "static/")
 	e.Logger.Fatal(e.Start(":8080"))
 }

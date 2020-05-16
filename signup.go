@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -13,9 +14,8 @@ Signup ...
 */
 type Signup struct {
 	// input
-	UserID      string `json:"userId"`
-	UserName    string `json:"userName"`
 	MailAddress string `json:"mailAddress"`
+	UserName    string `json:"userName"`
 	Passwd      string `json:"passwd"`
 	Passwd2     string `json:"passwd2"`
 
@@ -42,13 +42,13 @@ func (controller *Controller) Signup(c echo.Context) error {
 	chk, signup.Message = checkInput(signup)
 
 	if !chk {
-		c.Logger().Error("userName check: ", signup.Message)
+		c.Logger().Error("checkInput: ", signup.Message)
 		return c.JSON(http.StatusOK, signup)
 	}
 
 	// 同一ユーザ存在チェック
-	query := "SELECT * FROM t_user where id = $1"
-	queryParam = append(queryParam, signup.UserID)
+	query := "SELECT * FROM t_user where mail_address = $1 and delete_flag = '0'"
+	queryParam = append(queryParam, signup.MailAddress)
 
 	_, err := controller.dbmap.Select(&userRows, query, queryParam...)
 	if err != nil {
@@ -57,9 +57,9 @@ func (controller *Controller) Signup(c echo.Context) error {
 	}
 
 	if len(userRows) != 0 {
-		// ユーザ名で検索して同名のユーザがいたら登録できない。
-		signup.Message = "同じユーザIDのユーザが存在するため登録できません。"
-		c.Logger().Error("userName check: ", signup.Message)
+		// 同一メールアドレスのユーザがいたら登録できない。
+		signup.Message = "既にユーザが存在するため登録できません。"
+		c.Logger().Warn("userName check: ", fmt.Sprintf("同じメールアドレスのユーザが存在するため登録できません。メールアドレス=[%s]", signup.MailAddress))
 		return c.JSON(http.StatusOK, signup)
 	}
 
@@ -67,9 +67,13 @@ func (controller *Controller) Signup(c echo.Context) error {
 	// 登録情報を作成してユーザ登録
 	// サインアップ時はサインアップ画面の入力内容＋
 	// 「00:仮登録状態,true:有料機能制限あり」で登録する。
-	user := createUser(signup, "00", true)
-	err = controller.dbmap.Insert(user)
+	user, err := createUser(signup, "00", true)
+	if err != nil {
+		c.Logger().Error("userName check: ", signup.Message, "detail: ", err)
+	}
 
+	// ユーザ情報をDB(t_user)に登録する。
+	err = controller.dbmap.Insert(user)
 	if err != nil {
 		signup.Message = "ユーザ登録でエラーが発生しました。"
 		c.Logger().Error("userName check: ", signup.Message, "detail: ", err)
@@ -83,30 +87,31 @@ func (controller *Controller) Signup(c echo.Context) error {
  createUser
  サインアップ画面で登録するユーザ情報を作成する。
 */
-func createUser(signup Signup, userStatus string, limitFlag bool) *User {
+func createUser(signup Signup, userStatus string, limitFlag bool) (*User, error) {
 	var user User
-	user.ID = signup.UserID
-	user.UserName = signup.UserName
 	user.MailAddress = signup.MailAddress
+	user.UserName = signup.UserName
 	user.UserStatus = userStatus
 	user.LimitFlag = limitFlag
-	user.Passwd = signup.Passwd
+
+	// パスワードをハッシュ化
+	user.Passwd = encode(signup.Passwd)
+	fmt.Println("パスワード: ", signup.Passwd)
+	fmt.Println("コンバート後のパスワード: ", user.Passwd)
+
 	user.Created = time.Now()
 	user.Updated = time.Now()
 
-	return &user
+	return &user, nil
 }
 
 func checkInput(signup Signup) (bool, string) {
 
-	if signup.UserID == "" {
-		return false, "ユーザIDは必須です。"
+	if signup.MailAddress == "" {
+		return false, "メールアドレスは必須です。"
 	}
 	if signup.UserName == "" {
 		return false, "ユーザ名は必須です。"
-	}
-	if signup.MailAddress == "" {
-		return false, "メールアドレスは必須です。"
 	}
 	if signup.Passwd == "" {
 		return false, "パスワードは必須です。"
